@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MusicShuffler</title>
+</head>
+
+<body>
+  <h1>
+    Welcome to the music shuffler web helper
+  </h1>
+
+  <form method="POST" action="/shuffle">
+    <label for="musicLocation">
+      Enter the absolute path to the folder you would like to use (i.e. the folder holding your music) : <input required type="text" id="musicLocation" name="musicLocation">
+    </label>
+
+    <br><br>
+
+    <label for="override">
+      <input type="checkbox" id="override" name="override">
+      Override the file in the chosen music folder
+    </label>
+
+    <br><br>
+
+
+    <button id="submit" type="submit">Shuffle !</button>
+  </form>
+
+  <div id="progress" style="display: none;">
+    <br><br>
+    Progress :
+
+    <span id="percentage">0</span>% done. <br>
+    <span id="text"></span>
+  </div>
+
+  <script>
+    let progress = 100;
+    let fetched = 0;
+
+    const fetchProgress = () => {
+      const xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          const { percentage, text } = JSON.parse(xhttp.response);
+          document.getElementById('percentage').innerHTML = percentage;
+          document.getElementById('text').innerHTML = text;
+
+          if (percentage.toString() === "0" && fetched > 5) {
+            document.getElementById('submit').removeAttribute('disabled');
+            document.getElementById('progress').style.display = 'none';
+          } else if (percentage.toString() === "100") {
+            document.getElementById('submit').removeAttribute('disabled');
+          } else {
+            fetchProgress();
+          }
+          fetched++;
+        }
+      };
+      xhttp.open("GET", "progress", true);
+      xhttp.send();
+    };
+
+    if (document && document.location && document.location.search) {
+      const afterDir = document.location.search.split('dir=')[1];
+      if (afterDir) {
+        const afterDirSplit = afterDir.split('&');
+        const dir = afterDirSplit[0];
+        document.getElementById('musicLocation').value = decodeURIComponent(dir);
+
+        if (afterDirSplit.indexOf('override=1') >= 0) {
+          document.getElementById('override').checked = true;
+        }
+        if (afterDirSplit.indexOf('shuffling=1') >= 0) {
+          progress = 0;
+          document.getElementById('submit').setAttribute('disabled', true);
+          document.getElementById('progress').style.display = 'block';
+          fetchProgress();
+        }
+      }
+    }
+  </script>
+
+</body>
+
+</html>

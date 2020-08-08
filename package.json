@@ -1,0 +1,28 @@
+{
+  "name": "musicshuffler",
+  "version": "0.0.1",
+  "description": "Just a little node script to shuffle files in a folder",
+  "main": "musicshuffler.js",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "opn": "^6.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "nodemon": "nodemon -e js,json,html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/virginielgb/musicShuffler.git"
+  },
+  "author": "VirginieLGB",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/virginielgb/musicShuffler/issues"
+  },
+  "homepage": "https://github.com/virginielgb/musicShuffler#readme"
+}
