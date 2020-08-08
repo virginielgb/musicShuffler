@@ -10,6 +10,8 @@ Possible options are :
                    Otherwise shuffled files will be saved in music/shuffled
                    
   -h | --help      to show this message
+                   
+  -w               to start a web-server for you to choose your music folder
   
 Please note that all subfolders will be deleted in the end location.
 Do not use the -o option if you want to preserve your original organisation.
