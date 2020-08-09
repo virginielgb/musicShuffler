@@ -13,7 +13,7 @@ Possible options are :
                    
   -h | --help      to show this message
                    
-  -w               to start a web-server for you to choose your music folder
+  -s               to start the shuffler immediately, and not via the web helper
   
 Please note that all subfolders will be deleted in the end location.
 Do not use the -o option if you want to preserve your original organisation.

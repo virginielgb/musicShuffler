@@ -44,7 +44,7 @@ if(options.indexOf('-h') >= 0 || options.indexOf('--help') >= 0) {
   console.log('\x1b[33m  -m=[value]       \x1b[0mto define the maximum number of songs to keep.');
   console.log('\x1b[33m  -o               \x1b[0mto override the files in the chosen music folder.');
   console.log('\x1b[33m                   \x1b[0mOtherwise shuffled files will be saved in' + shuffledLocation);
-  console.log('\x1b[33m  -w               \x1b[0mto start a web-server for you to choose your music folder');
+  console.log('\x1b[33m  -s               \x1b[0mto start the shuffler immediately, and not via the web helper');
   console.log('\x1b[33m                   \x1b[0mand see the progress of the shuffle');
   console.log('\x1b[33m  -h | --help      \x1b[0mto show this message')
   console.log('');
@@ -216,7 +216,7 @@ const main = async () => {
   console.log('Total process time : ' + Math.round(processTime / 1000) + 's or about ' + Math.round(processTime/nbMusicFiles) + 'ms per file');
 };
 
-const startWebServer = options.indexOf('-w') >= 0;
+const startWebServer = options.indexOf('-s') === -1;
 
 if(startWebServer) {
   const express = require('express');
