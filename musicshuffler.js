@@ -132,7 +132,7 @@ const emptyFolder = function(pathname) {
 
 const saveNewMusicFile = (pathname, index) => {
   return new Promise((resolve)=> {
-    let indexString = index.toString();
+    let indexString = (index + 1).toString();
     while(indexString.length < indexStringSize) {
       indexString = '0' + indexString;
     }
@@ -192,7 +192,7 @@ const main = async () => {
 
   updateProgress(20, 'Saving ' + nbMusicFiles + ' files to temporary location...');
   
-  indexStringSize = ((newMusicPaths.length).toString()).length;
+  indexStringSize = ((newMusicPaths.length + 1).toString()).length;
   const newMusicPathsPromises = [];
   newMusicPaths.forEach((pathname, index) => {
     if(nbMusicFiles > newMusicPathsPromises.length) {
@@ -237,7 +237,8 @@ if(startWebServer) {
 
   const port = 3939;
 
-  app.use(express.static('web'));
+  const publicFolder = path.join(__dirname, '/web');
+  app.use(express.static(publicFolder, { maxAge: '1y' }));
   
   const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
