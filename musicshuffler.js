@@ -158,6 +158,18 @@ const updateProgress = (percentage, text) => {
 const main = async () => {
   setOptions();
   const startTimeStamp = new Date().getTime();
+  try {
+    await fs.stat('./music');
+  } catch(e) {
+    console.error('./music' + ' did not exist');
+    fs.mkdir('./music');
+  }
+  try {
+    await fs.stat(finalLocation);
+  } catch(e) {
+    console.error(finalLocation + ' did not exist');
+    fs.mkdir(finalLocation);
+  }
 
   updateProgress(0, 'Creating temporary directory...');
   
