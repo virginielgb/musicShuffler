@@ -11,9 +11,16 @@
   "devDependencies": {
     "nodemon": "^2.0.4"
   },
+	"bin": "musicshuffler.js",
+	"pkg": {
+		"assets": [
+			"web/*"
+		]
+	},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "nodemon": "nodemon -e js,json,html"
+    "nodemon": "nodemon -e js,json,html",
+    "pkg": "pkg . -t latest-win-x64 & move musicShuffler.exe bin/musicShuffler.exe"
   },
   "repository": {
     "type": "git",
