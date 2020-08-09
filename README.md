@@ -6,6 +6,8 @@ You should call this by executing
     
 Possible options are :
 
+  -m=[value]       to define the maximum number of songs to keep.
+
   -o               to override the files in the chosen music folder.
                    Otherwise shuffled files will be saved in music/shuffled
                    

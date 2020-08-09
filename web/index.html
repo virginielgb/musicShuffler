@@ -15,13 +15,17 @@
   <form method="POST" action="/shuffle">
     <label for="musicLocation">
       Enter the absolute path to the folder you would like to use (i.e. the folder holding your music) : <input required type="text" id="musicLocation" name="musicLocation">
-    </label>
-
-    <br><br>
+    </label><br><br>
 
     <label for="override">
       <input type="checkbox" id="override" name="override">
       Override the file in the chosen music folder
+    </label><br><br>
+
+    <label for="maxNumber">
+      <input type="number" id="maxNumber" name="maxNumber">
+      Maximum number of tracks to keep
+      <br> &nbsp;&nbsp;&nbsp; /!\ if you chose to override your music folder, the tracks that do not make it will be deleted from your filesystem
     </label>
 
     <br><br>
@@ -66,21 +70,29 @@
     };
 
     if (document && document.location && document.location.search) {
-      const afterDir = document.location.search.split('dir=')[1];
-      if (afterDir) {
-        const afterDirSplit = afterDir.split('&');
-        const dir = afterDirSplit[0];
-        document.getElementById('musicLocation').value = decodeURIComponent(dir);
+      const searchInfo = new URLSearchParams(document.location.search);
 
-        if (afterDirSplit.indexOf('override=1') >= 0) {
-          document.getElementById('override').checked = true;
-        }
-        if (afterDirSplit.indexOf('shuffling=1') >= 0) {
-          progress = 0;
-          document.getElementById('submit').setAttribute('disabled', true);
-          document.getElementById('progress').style.display = 'block';
-          fetchProgress();
-        }
+      const dir = searchInfo.get('dir');
+      if (dir) {
+        document.getElementById('musicLocation').value = decodeURIComponent(dir);
+      }
+
+      const override = searchInfo.get('override');
+      if (override && override.toString() === "1") {
+        document.getElementById('override').checked = true;
+      }
+
+      const shuffling = searchInfo.get('shuffling');
+      if (shuffling && shuffling.toString() === "1") {
+        progress = 0;
+        document.getElementById('submit').setAttribute('disabled', true);
+        document.getElementById('progress').style.display = 'block';
+        fetchProgress();
+      }
+
+      const maxNumber = searchInfo.get('maxNumber');
+      if (maxNumber && maxNumber.toString() !== "-1") {
+        document.getElementById('maxNumber').value = maxNumber;
       }
     }
   </script>

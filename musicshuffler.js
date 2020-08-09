@@ -12,6 +12,7 @@ const shuffledLocation = './music/shuffled';
 let musicLocation = (args[0] || shuffledLocation).replace(/\\/ig,'/');
 let finalLocation = shuffledLocation;
 const tempLocation = './music/temp';
+let maxNumberOfTracks = -1; 
 
 let progress = {
   percentage: 0,
@@ -21,7 +22,18 @@ let progress = {
 const setFinalLocation = () => {
   finalLocation = options.length > 0 && options.indexOf('-o') >= 0 ? musicLocation :  './music/shuffled';
 };
-setFinalLocation();
+const setMax = () => {
+  options.forEach(option => {
+    if(option.indexOf('-m=') >= 0) {
+     maxNumberOfTracks = +(option.split('-m=')[1]);
+    }
+  });
+};
+const setOptions = () => {
+  setFinalLocation();
+  setMax();
+};
+
 
 if(options.indexOf('-h') >= 0 || options.indexOf('--help') >= 0) {
   console.log('\x1b[32mWelcome to the music shuffler.\x1b[0m');
@@ -29,6 +41,7 @@ if(options.indexOf('-h') >= 0 || options.indexOf('--help') >= 0) {
   console.log('You should call this by executing');
   console.log('\x1b[36m       node musicshuffler.js [options] [musicfolder]\x1b[0m');
   console.log('Possible options are :');
+  console.log('\x1b[33m  -m=[value]       \x1b[0mto define the maximum number of songs to keep.');
   console.log('\x1b[33m  -o               \x1b[0mto override the files in the chosen music folder.');
   console.log('\x1b[33m                   \x1b[0mOtherwise shuffled files will be saved in' + shuffledLocation);
   console.log('\x1b[33m  -w               \x1b[0mto start a web-server for you to choose your music folder');
@@ -143,6 +156,7 @@ const updateProgress = (percentage, text) => {
 };
 
 const main = async () => {
+  setOptions();
   const startTimeStamp = new Date().getTime();
 
   updateProgress(0, 'Creating temporary directory...');
@@ -162,14 +176,16 @@ const main = async () => {
   updateProgress(15, 'Shuffling...');
 
   const newMusicPaths = shuffleArray(allMusicPaths);
-  const nbMusicFiles = newMusicPaths.length;
+  const nbMusicFiles = maxNumberOfTracks === -1 ? newMusicPaths.length : Math.min(newMusicPaths.length, maxNumberOfTracks);
 
   updateProgress(20, 'Saving ' + nbMusicFiles + ' files to temporary location...');
   
   indexStringSize = ((newMusicPaths.length).toString()).length;
   const newMusicPathsPromises = [];
   newMusicPaths.forEach((pathname, index) => {
-    newMusicPathsPromises.push(saveNewMusicFile(pathname, index));
+    if(nbMusicFiles > newMusicPathsPromises.length) {
+      newMusicPathsPromises.push(saveNewMusicFile(pathname, index));
+    }
   });
 
   await Promise.all(newMusicPathsPromises);
@@ -213,12 +229,12 @@ if(startWebServer) {
   
   const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
-  app.get('/progress', (req, res, next) => {
+  app.get('/progress', (req, res) => {
     res.status(200).send(progress);
   });
 
 
-  app.post('/shuffle', urlencodedParser, (req, res, next) => {
+  app.post('/shuffle', urlencodedParser, (req, res) => {
     if(req.body.musicLocation) {
       musicLocation = req.body.musicLocation;
     }
@@ -229,12 +245,14 @@ if(startWebServer) {
     if(req.body.override) {
       options.push('-o');
     }
+    if(req.body.maxNumber) {
+      options.push('-m=' + req.body.maxNumber);
+    }
     
-    setFinalLocation();
     main();
 
     const dir = encodeURIComponent(musicLocation.indexOf(__dirname) >= 0 ? musicLocation : path.join(__dirname.replace(/\\/ig,'/'), musicLocation.replace('./', '')));
-    res.redirect(`/?dir=${dir}&override=${req.body.override? 1 : 0}&shuffling=1`);
+    res.redirect(`/?dir=${dir}&override=${req.body.override? 1 : 0}&shuffling=1&maxNumber=` + maxNumberOfTracks);
   })
 
   app.listen(port, () => {
